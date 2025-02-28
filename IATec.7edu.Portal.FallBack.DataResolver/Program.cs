@@ -1,15 +1,26 @@
+using IATec._7edu.Portal.FallBack.DataResolver.Configuration;
+using IATec._7edu.Portal.FallBack.DataResolver.Handles;
+using IATec._7edu.Portal.FallBack.DataResolver.Interfaces;
+using IATec._7edu.Portal.FallBack.DataResolver.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCustomHttpClients(builder.Configuration);
+
+// Adicionar Handlers e FallbackService
+builder.Services.AddScoped<IFallbackHandler, LegacyApiHandler>();
+builder.Services.AddScoped<IFallbackHandler, EventApiHandler>();
+builder.Services.AddScoped<FallbackService>();
+
+// Registrar RouteConfigurationService
+builder.Services.AddSingleton<IRouteConfigurationService, RouteConfigurationService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

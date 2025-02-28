@@ -1,0 +1,6 @@
+@IATec._7edu.Portal.FallBack.DataResolver_HostAddress = http://localhost:5221
+
+GET {{IATec._7edu.Portal.FallBack.DataResolver_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -2,7 +2,7 @@
 
 namespace IATec._7edu.Portal.FallBack.DataResolver.Configuration;
 
-public static class HttpClientFactoryExtensions
+public static class HttpClientFactoryConfiguration
 {
     public static void AddCustomHttpClients(this IServiceCollection services, IConfiguration configuration)
     {

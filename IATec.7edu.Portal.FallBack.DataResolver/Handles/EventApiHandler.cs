@@ -20,7 +20,7 @@ public class EventApiHandler : IFallbackHandler
         return source == SourceEnum.SevenEdu;
     }
 
-    public async Task<T> HandleAsync<T>(Guid missingDataId, string route) where T : ContractBase
+    public async Task<(object, int)> HandleAsync<T>(Guid missingDataId, string route) where T : ContractBase
     {
         var client = _clientFactory.CreateClient("EventApi");
         var response = await client.GetAsync($"{route}/{missingDataId}");
@@ -28,23 +28,25 @@ public class EventApiHandler : IFallbackHandler
         if (response.IsSuccessStatusCode)
         {
             var apiResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(apiResponse);
+            return (JsonConvert.DeserializeObject<T>(apiResponse), StatusCodes.Status200OK);
         }
 
         switch (response.StatusCode)
         {
             case HttpStatusCode.InternalServerError:
-                return null;
+                return (null, (int)HttpStatusCode.OK);
             case HttpStatusCode.BadGateway:
-                return null;
+                return (null, (int)HttpStatusCode.BadGateway);
             case HttpStatusCode.NoContent:
-                return null;
+                return (null, (int)HttpStatusCode.NoContent);
             case HttpStatusCode.BadRequest:
-                return null;
+                return (null, (int)HttpStatusCode.BadRequest);
             case HttpStatusCode.Forbidden:
-                return null;
+                return (null, (int)HttpStatusCode.Forbidden);
+            case HttpStatusCode.NotFound:
+                return (null, (int)HttpStatusCode.NotFound);
         }
 
-        return null;
+        return (null, (int)HttpStatusCode.InternalServerError);
     }
 }

@@ -15,7 +15,7 @@ public class FallbackService
         _routes = routes;
     }
 
-    public async Task<object> HandleAsync(FallbackRequest request)
+    public async Task<(object Data, int StatusCode)> HandleAsync(FallbackRequest request)
     {
         var handler = _handlers.FirstOrDefault(h => h.CanHandle(request.SourceEnum));
         if (handler == null)
@@ -40,7 +40,14 @@ public class FallbackService
         await task.ConfigureAwait(false);
 
         var resultProperty = task.GetType().GetProperty("Result");
-        return resultProperty?.GetValue(task);
+        var resultValue = resultProperty?.GetValue(task);
+
+        if (resultValue is ValueTuple<object, int> resultTuple)
+        {
+            return resultTuple;
+        }
+
+        return (null, StatusCodes.Status500InternalServerError);
     }
 }
 

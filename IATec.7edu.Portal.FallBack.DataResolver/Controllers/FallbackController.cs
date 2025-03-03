@@ -9,18 +9,22 @@ namespace IATec._7edu.Portal.FallBack.DataResolver.Controllers;
 public class FallbackController : ControllerBase
 {
     private readonly FallbackService _fallbackService;
+    private readonly ILogger<FallbackController> _logger;
 
-    public FallbackController(FallbackService fallbackService)
+    public FallbackController(FallbackService fallbackService, ILogger<FallbackController> logger)
     {
         _fallbackService = fallbackService;
+        _logger = logger;
     }
 
     [HttpPost]
     public async Task<IActionResult> GetMissingData([FromBody] FallbackRequest request)
     {
         var data = await _fallbackService.HandleAsync(request);
-        if (data == null)
-            return NotFound();
-        return Ok(data);
+
+        if (data.Data is null)
+            return StatusCode((int)data.StatusCode);
+
+        return Ok(data.Data);
     }
 }
